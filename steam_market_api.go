@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"time"
 )
 
-const steamMarketURL = "https://steamcommunity.com/market"
-const steamMarketList = "/search/render"
-const steamPrice = "/priceoverview"
+const (
+	steamMarketURL  = "https://steamcommunity.com/market"
+	steamMarketList = "/search/render"
+	steamPrice      = "/priceoverview"
+	noRender        = "1"
+)
 
 type SteamMarketClient struct {
 	Client *http.Client
@@ -25,7 +27,7 @@ type SearchData struct {
 	ClassPrefix string `json:"class_prefix"`
 }
 
-type AssertDescription struct {
+type AssetDescription struct {
 	Appid                 int    `json:"appid"`
 	ClassID               string `json:"classid"`
 	BackgroundColor       string `json:"background_color"`
@@ -42,15 +44,15 @@ type AssertDescription struct {
 }
 
 type ResultItem struct {
-	Name             string            `json:"name"`
-	HashName         string            `json:"hash_name"`
-	SellListings     int               `json:"sell_listings"`
-	SellPrice        int               `json:"sell_price"`
-	SellPriceText    string            `json:"sell_price_text"`
-	AppIcon          string            `json:"app_icon"`
-	AppName          string            `json:"app_name"`
-	AssetDescription AssertDescription `json:"asset_description"`
-	SalePriceText    string            `json:"sale_price_text"`
+	Name             string           `json:"name"`
+	HashName         string           `json:"hash_name"`
+	SellListings     int              `json:"sell_listings"`
+	SellPrice        int              `json:"sell_price"`
+	SellPriceText    string           `json:"sell_price_text"`
+	AppIcon          string           `json:"app_icon"`
+	AppName          string           `json:"app_name"`
+	AssetDescription AssetDescription `json:"asset_description"`
+	SalePriceText    string           `json:"sale_price_text"`
 }
 
 type MarketList struct {
@@ -71,14 +73,14 @@ type PriceOverview struct {
 
 func NewSteamMarketClient(httpClient *http.Client, url string) *SteamMarketClient {
 	if httpClient == nil {
-		httpClient = &http.Client{Timeout: 5 * time.Second}
+		httpClient = &http.Client{Timeout: defaultTimeout}
 	}
 	return &SteamMarketClient{Client: httpClient, url: url}
 }
 
 func (s *SteamMarketClient) GetMarketList(ctx context.Context, appid string) (*MarketList, error) {
 	params := url.Values{}
-	params.Set("norender", "1")
+	params.Set("norender", noRender)
 	params.Set("appid", appid)
 
 	reqURL, err := BuildURL(s.url, steamMarketList, params)
@@ -90,6 +92,10 @@ func (s *SteamMarketClient) GetMarketList(ctx context.Context, appid string) (*M
 	if err != nil {
 		return nil, fmt.Errorf("get market list: %w", err)
 	}
+	if result == nil {
+		return nil, fmt.Errorf("get market list: result is nil")
+	}
+
 	return result, nil
 }
 
@@ -104,11 +110,15 @@ func (s *SteamMarketClient) GetPrices(ctx context.Context, appid string, currenc
 		return nil, fmt.Errorf("get prices: %w", err)
 	}
 
-	resp, err := DoJSON[PriceOverview](ctx, s.Client, reqURL)
+	price, err := DoJSON[PriceOverview](ctx, s.Client, reqURL)
 
 	if err != nil {
 		return nil, fmt.Errorf("get prices: %w", err)
 	}
 
-	return resp, nil
+	if price == nil {
+		return nil, fmt.Errorf("get prices: result is nil")
+	}
+
+	return price, nil
 }

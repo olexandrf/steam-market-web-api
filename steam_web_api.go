@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"time"
 )
 
-const timeout = 3 * time.Second
-const steamURL = "https://api.steampowered.com"
-const steamNews = "/ISteamNews/GetNewsForApp/v0002"
-const steamGlobalAchievements = "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002"
-const format = "json"
-const cs2appid = "730"
+const (
+	steamURL                = "https://api.steampowered.com"
+	steamNews               = "/ISteamNews/GetNewsForApp/v0002"
+	steamGlobalAchievements = "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002"
+	format                  = "json"
+	cs2appid                = "730"
+)
 
 type SteamWebAPIClient struct {
 	url string
@@ -23,7 +23,7 @@ type SteamWebAPIClient struct {
 
 func NewSteamWebAPIClient(client *http.Client, url string) *SteamWebAPIClient {
 	if client == nil {
-		client = &http.Client{Timeout: timeout}
+		client = &http.Client{Timeout: defaultTimeout}
 	}
 
 	return &SteamWebAPIClient{c: client, url: url}

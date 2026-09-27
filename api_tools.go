@@ -8,9 +8,13 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 )
 
-const maxErrorBody = 1 << 10
+const (
+	maxErrorBody   = 1 << 10
+	defaultTimeout = 5 * time.Second
+)
 
 var ErrClientNil = errors.New("client is nil")
 
