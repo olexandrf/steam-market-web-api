@@ -17,7 +17,7 @@ func main() {
 	var err error
 	ctx := context.Background()
 	steamClient := NewSteamWebAPIClient(nil, steamURL)
-	steamNews, err := steamClient.GetNews(ctx, cs2appid, 1)
+	steamNews, err := steamClient.GetNews(ctx, cs2appid, 1, defaultFormat)
 	logOnError(err, "GetNews")
 	fmt.Printf("%+v\n", steamNews)
 	SteamMarketClient := NewSteamMarketClient(nil, steamMarketURL)

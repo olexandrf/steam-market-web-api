@@ -217,3 +217,15 @@ func TestDoRequest_NonOKStatus(t *testing.T) {
 		})
 	}
 }
+
+func TestGetMarketList_ContextCancelled(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	client := NewSteamMarketClient(nil, steamMarketURL)
+	_, err := client.GetMarketList(ctx, cs2appid)
+
+	if err == nil {
+		t.Fatal("expected error for cancelled context")
+	}
+}

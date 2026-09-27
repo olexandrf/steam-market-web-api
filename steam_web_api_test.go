@@ -14,7 +14,7 @@ func TestSteamWebAPIClient_GetNews(t *testing.T) {
 	params := url.Values{}
 	count := 1
 	params.Set("appid", cs2appid)
-	params.Set("format", format)
+	params.Set("format", defaultFormat)
 	params.Set("count", strconv.Itoa(count))
 	testTitle := "testing-title-content"
 	var gotPath, gotAccept string
@@ -28,7 +28,7 @@ func TestSteamWebAPIClient_GetNews(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	SteamMarketNews, err := NewSteamWebAPIClient(srv.Client(), srv.URL).GetNews(context.Background(), cs2appid, 1)
+	SteamMarketNews, err := NewSteamWebAPIClient(srv.Client(), srv.URL).GetNews(context.Background(), cs2appid, 1, defaultFormat)
 	if gotPath != steamNews {
 		t.Errorf("got path %s; want %s", gotPath, steamNews)
 	}
