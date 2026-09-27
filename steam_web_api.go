@@ -86,7 +86,7 @@ func (s *SteamWebAPIClient) GetNews(ctx context.Context, appid string, count int
 	return news, nil
 }
 
-func (s *SteamWebAPIClient) GetGlobalAchievementsPercentages(ctx context.Context, gameId string) (*SteamAchievements, error) {
+func (s *SteamWebAPIClient) GetGlobalAchievementsPercentages(ctx context.Context, gameId string, format string) (*SteamAchievements, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, fmt.Errorf("get global achievements: %w", err)
 	}
