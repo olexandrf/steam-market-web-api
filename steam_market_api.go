@@ -79,6 +79,9 @@ func NewSteamMarketClient(httpClient *http.Client, url string) *SteamMarketClien
 }
 
 func (s *SteamMarketClient) GetMarketList(ctx context.Context, appid string) (*MarketList, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, fmt.Errorf("context error: %w", err)
+	}
 	params := url.Values{}
 	params.Set("norender", noRender)
 	params.Set("appid", appid)
@@ -100,6 +103,9 @@ func (s *SteamMarketClient) GetMarketList(ctx context.Context, appid string) (*M
 }
 
 func (s *SteamMarketClient) GetPrices(ctx context.Context, appid string, currency string, marketHashName string) (*PriceOverview, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, fmt.Errorf("context error: %w", err)
+	}
 	params := url.Values{}
 	params.Set("appid", appid)
 	params.Set("currency", currency)
