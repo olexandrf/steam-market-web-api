@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -218,14 +219,40 @@ func TestDoRequest_NonOKStatus(t *testing.T) {
 	}
 }
 
-func TestGetMarketList_ContextCancelled(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-
-	client := NewSteamMarketClient(nil, steamMarketURL)
-	_, err := client.GetMarketList(ctx, cs2appid)
-
+func TestDoRequest_ContextDeadline(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		<-r.Context().Done()
+	}))
+	defer srv.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+	_, err := DoRequest(ctx, srv.Client(), srv.URL)
 	if err == nil {
-		t.Fatal("expected error for cancelled context")
+		t.Fatal("expected error for deadline context")
+	}
+
+	ok := errors.Is(err, context.DeadlineExceeded)
+	if !ok {
+		t.Fatalf("DoRequest() error = %T(%v), want DeadlineExceeded", err, err)
+	}
+}
+
+func TestDoRequest_ClientTimeout(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		<-r.Context().Done()
+	}))
+	defer srv.Close()
+	client := srv.Client()
+	client.Timeout = 50 * time.Millisecond
+	_, err := DoRequest(context.Background(), client, srv.URL)
+	if err == nil {
+		t.Fatal("expected error for timeout context")
+	}
+	var netErr net.Error
+	if !errors.As(err, &netErr) {
+		t.Fatalf("DoRequest() error = %T(%v), want a net.Error", err, err)
+	}
+	if !netErr.Timeout() {
+		t.Fatalf("DoRequest() error = %v, want %v", err, context.DeadlineExceeded)
 	}
 }
