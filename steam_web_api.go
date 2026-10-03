@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	steamURL                = "https://api.steampowered.com"
-	steamNews               = "/ISteamNews/GetNewsForApp/v0002"
-	steamGlobalAchievements = "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002"
-	cs2appid                = "730"
-	defaultFormat           = "json"
+	SteamURL             = "https://api.steampowered.com"
+	SteamNewsURL         = "/ISteamNews/GetNewsForApp/v0002"
+	SteamAchievementsURL = "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002"
+	CS2ID                = "730"
+	DefaultFormat        = "json"
 )
 
 type SteamWebAPIClient struct {
@@ -74,7 +74,7 @@ func (s *SteamWebAPIClient) GetNews(ctx context.Context, appid string, count int
 	params.Set("format", format)
 	params.Set("count", strconv.Itoa(count))
 
-	reqURL, err := BuildURL(s.url, steamNews, params)
+	reqURL, err := BuildURL(s.url, SteamNewsURL, params)
 	if err != nil {
 		return nil, fmt.Errorf("get news: %w", err)
 	}
@@ -94,7 +94,7 @@ func (s *SteamWebAPIClient) GetGlobalAchievementsPercentages(ctx context.Context
 	params.Set("gameid", gameId)
 	params.Set("format", format)
 
-	reqURL, err := BuildURL(s.url, steamGlobalAchievements, params)
+	reqURL, err := BuildURL(s.url, SteamAchievementsURL, params)
 	if err != nil {
 		return nil, fmt.Errorf("get global achievements: %w", err)
 	}

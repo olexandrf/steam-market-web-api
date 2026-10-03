@@ -13,8 +13,8 @@ import (
 func TestSteamWebAPIClient_GetNews(t *testing.T) {
 	params := url.Values{}
 	count := 1
-	params.Set("appid", cs2appid)
-	params.Set("format", defaultFormat)
+	params.Set("appid", CS2ID)
+	params.Set("format", DefaultFormat)
 	params.Set("count", strconv.Itoa(count))
 	testTitle := "testing-title-content"
 	var gotPath, gotAccept string
@@ -28,9 +28,9 @@ func TestSteamWebAPIClient_GetNews(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	SteamMarketNews, err := NewSteamWebAPIClient(srv.Client(), srv.URL).GetNews(context.Background(), cs2appid, 1, defaultFormat)
-	if gotPath != steamNews {
-		t.Errorf("got path %s; want %s", gotPath, steamNews)
+	SteamMarketNews, err := NewSteamWebAPIClient(srv.Client(), srv.URL).GetNews(context.Background(), CS2ID, 1, DefaultFormat)
+	if gotPath != SteamNewsURL {
+		t.Errorf("got path %s; want %s", gotPath, SteamNewsURL)
 	}
 	if gotAccept != "application/json" {
 		t.Errorf("got accept %s; want application/json", gotAccept)
@@ -41,10 +41,10 @@ func TestSteamWebAPIClient_GetNews(t *testing.T) {
 	if SteamMarketNews == nil {
 		t.Fatalf("SteamWebAPIClient.GetNews() = %v, want non-nil", SteamMarketNews)
 	}
-	cs2id, _ := strconv.Atoi(cs2appid)
+	cs2id, _ := strconv.Atoi(CS2ID)
 	appNews := SteamMarketNews.AppNews
 	if appNews.Appid != cs2id {
-		t.Errorf("SteamWebAPIClient.GetNews() = %v, want appid", cs2appid)
+		t.Errorf("SteamWebAPIClient.GetNews() = %v, want appid", CS2ID)
 	}
 	newsItems := appNews.NewsItems
 	if len(newsItems) == 0 {

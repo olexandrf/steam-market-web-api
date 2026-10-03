@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	steamMarketURL  = "https://steamcommunity.com/market"
-	steamMarketList = "/search/render"
-	steamPrice      = "/priceoverview"
-	noRender        = "1"
+	SteamMarketURL     = "https://steamcommunity.com/market"
+	SteamMarketListURL = "/search/render"
+	SteamPriceURL      = "/priceoverview"
+	noRender           = "1"
 )
 
 type SteamMarketClient struct {
@@ -86,7 +86,7 @@ func (s *SteamMarketClient) GetMarketList(ctx context.Context, appid string) (*M
 	params.Set("norender", noRender)
 	params.Set("appid", appid)
 
-	reqURL, err := BuildURL(s.url, steamMarketList, params)
+	reqURL, err := BuildURL(s.url, SteamMarketListURL, params)
 	if err != nil {
 		return nil, fmt.Errorf("get market list: %w", err)
 	}
@@ -111,7 +111,7 @@ func (s *SteamMarketClient) GetPrices(ctx context.Context, appid string, currenc
 	params.Set("currency", currency)
 	params.Set("market_hash_name", marketHashName)
 
-	reqURL, err := BuildURL(s.url, steamPrice, params)
+	reqURL, err := BuildURL(s.url, SteamPriceURL, params)
 	if err != nil {
 		return nil, fmt.Errorf("get prices: %w", err)
 	}
