@@ -24,7 +24,7 @@ func TestSteamWebAPIClient_GetNews(t *testing.T) {
 		gotAccept = r.Header.Get("Accept")
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		io.WriteString(w, testJson)
+		_, _ = io.WriteString(w, testJson)
 	}))
 	defer srv.Close()
 
